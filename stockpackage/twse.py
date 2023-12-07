@@ -2,6 +2,8 @@
 import time
 import json
 import pandas as pd
+import os
+import csv
 
 # installed
 import requests
@@ -73,9 +75,6 @@ class Company:
         request_data = requests.get(url, params = Company_params)
         self.data = json.loads(request_data.content)
         self.data = self.clean(self.data)
-        
-        print("sleep")
-        time.sleep(2)
 
         return self.data
         
@@ -128,7 +127,25 @@ class Company:
             result_today = self.data[self.data["Date"] == self.date]
             
             return result_today
-        
+
+
+    def save(self):
+
+        if not os.path.isdir("stocks"):
+            os.mkdir("stocks")            
+
+        data_path = os.path.join("stocks", f"{self.comp_id}.csv")
+
+        if not os.path.isfile(data_path):
+            opfile = open(data_path, mode = "w", newline = "")
+            opfilewriter = csv.writer(opfile)
+            opfilewriter.writerow(self.data.columns)
+            
+            for i in self.data.index:
+                opfilewriter.writerow(self.data.iloc[i])
+        else:
+            pass
+
 
 
 
